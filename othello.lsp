@@ -1,36 +1,40 @@
+#|
+ | Program: Othello
+ | Authors: Matt Dyke, Christian Sieh
+ | Class: CSC 447 - Artificial Intelligence
+ | Instructor: Dr. Weiss
+ | Due Date: April 21, 2016
+ |
+ | Description:
+ |
+ | Input:
+ | Output:
+ | Compilation instructions: Run in CLisp on Linux or Windows
+ | Usage:
+ |#
 
-(setf *board* '(- - - - - - - -
-		- - - - - - - -
-		- - - - - - - -
-		- - - W B - - -
-		- - - B W - - -
-		- - - - - - - -
-		- - - - - - - -
-		- - - - - - - -))
+;;------------------------------ Global Variables ------------------------------;
+
+( defvar *BOARD* '( - - - - - - - -
+                    - - - - - - - -
+                    - - - - - - - -
+                    - - - W B - - -
+                    - - - B W - - -
+                    - - - - - - - -
+                    - - - - - - - -
+                    - - - - - - - - ) ) ;Othello board state
+
+;--------------------------------- Functions ----------------------------------;
 
 #|
- |	Initialization
+ | Function: othello
+ |
+ | Description:
+ |
+ | Parameters:
+ |   &optional ( player nil ) - Color of player's pieces
+ |
  |#
-(defun othello-init ()
-
-)
-
-#|
- | 	This is the move function used for the AI in the tournament
- |#
-(defun make-move (board player ply)
-
-)
-
-#|
- | 	This will check if the player has any available moves and
- | 	if so will return a list of available moves so we can check 
- | 	that against the move the player enters
- |#
-(defun check-moves (player)
-
-)
-
 ( defun othello ( &optional ( player nil ) )
     ( cond
         ;If no starting player given
@@ -53,10 +57,6 @@
             )
         )
     )
-    
-    ( format t "~s~%" player )
-    
-    
 )
 
 
