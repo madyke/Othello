@@ -36,6 +36,10 @@
  |
  |#
 ( defun othello ( &optional ( player nil ) )
+    ;Load program files
+    ( load 'utilities.lsp )
+
+    ;Set players piece color
     ( cond
         ;If no starting player given
         ( ( null player )
@@ -57,6 +61,9 @@
             )
         )
     )
+    
+    ;DEBUG
+    ( print-board )
 )
 
 
