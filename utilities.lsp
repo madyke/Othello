@@ -57,6 +57,6 @@
  |   
  |
  |#
-( defun play-game ()
-
+( defun play-game ( player )
+    
 )
