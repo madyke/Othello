@@ -62,8 +62,14 @@
         )
     )
     
-    ;DEBUG
-    ( print-board )
+    ;Print game info
+    ( format t "~%OK! You will be playing ~d. When asked for your " player )
+    ( format t "move, please enter the row and column in which you would " )
+    ( format t "like to place a Black stone. Remember, you must outflank " )
+    ( format t "at least one White stone, or forfeit your move.~%~%" )
+    
+    ;Play game
+    ( play-game )
 )
 
 
