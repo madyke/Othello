@@ -24,6 +24,7 @@
                     - - - - - - - -
                     - - - - - - - - ) ) ;Othello board state
 
+
 ;--------------------------------- Functions ----------------------------------;
 
 #|
@@ -38,6 +39,7 @@
 ( defun othello ( &optional ( player nil ) )
     ;Load program files
     ( load 'utilities.lsp )
+    ( load 'games.lsp )
     
     ;Ask user to select game type
     ( format t "The following game types are available:~%" )
@@ -63,41 +65,20 @@
     )
     
     ;Start requested game type
-    ;( cond
-    ;    ( equal )
-    ;)
-    
-    ;Set players piece color
     ( cond
-        ;If no starting player given
-        ( ( null player )
-            ;Ask user if they want to go first
-            ( format t "Would you like to go first (y/n)? " )
-            
-            ;If user responds 'y', set to black, else set to white
-            ( if ( equal ( read ) 'y )
-                ( setf player 'black )
-                ( setf player 'white )
-            )
+        ;User selected PvP game
+        ( ( equal game-type 1 )
+            ( play-PvP-game )
         )
-        ;If starting player given
-        ( t
-            ;If user entered "BLACK", set to black, else set to white
-            ( if ( string-equal player "BLACK" )
-                ( setf player 'black )
-                ( setf player 'white )
-            )
+        ;User selected PvE game
+        ( ( equal game-type 2 )
+            ( play-PvE-game player )
+        )
+        ;User selected EvE game
+        ( ( equal game-type 3 )
+            ( play-EvE-game )
         )
     )
-    
-    ;Print game info
-    ( format t "~%OK! You will be playing ~d. When asked for your " player )
-    ( format t "move, please enter the row and column in which you would " )
-    ( format t "like to place a Black stone. Remember, you must outflank " )
-    ( format t "at least one White stone, or forfeit your move.~%~%" )
-    
-    ;Play game
-    ( play-game player )
 )
 
 
