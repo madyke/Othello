@@ -6,7 +6,26 @@
  |
  |#
 ( defun play-PvP-game ()
+    ;Print game information
+    ( format t "~%OK! The first player will be playing BLACK, the second " )
+    ( format t "player will be playing WHITE. When asked for your move, " )
+    ( format t "please enter the row and column in which you would like to " )
+    ( format t "place a stone. Remember, you must outflank at least one " )
+    ( format t " of your opponent's stones, or forfeit your move.~%" )
     
+    ;Loop player moves
+    ( do
+        ;Local vars
+        ( ( move-num 0 ( 1+ move-num ) ) )
+        
+        ;Termination Condition - PLACEHOLDER
+        ( ( > move-num 10 ) )
+        
+        ;Print board and request next move
+        ( print-board )
+    )
+    
+    ( format t "~%GAME OVER~%")
 )
 
 
@@ -41,10 +60,10 @@
         )
     )
     
-    ;Print game info
+    ;Print game information
     ( format t "~%OK! You will be playing ~d. When asked for your " player )
     ( format t "move, please enter the row and column in which you would " )
-    ( format t "like to place a Black stone. Remember, you must outflank " )
+    ( format t "like to place a ~d stone. Remember, you must outflank " player )
     ( format t "at least one White stone, or forfeit your move.~%~%" )
     
     ( print-board )
