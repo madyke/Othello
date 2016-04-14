@@ -11,7 +11,7 @@
     ( format t "player will be playing WHITE. When asked for your move, " )
     ( format t "please enter the row and column in which you would like to " )
     ( format t "place a stone. Remember, you must outflank at least one " )
-    ( format t " of your opponent's stones, or forfeit your move.~%" )
+    ( format t " of your opponent's stones, or forfeit your move.~%~%" )
     
     ;Loop player moves
     ( do
@@ -23,6 +23,10 @@
         
         ;Print board and request next move
         ( print-board )
+        ( format t "~%What is your move [row col]? " )
+        
+        ;Get users move and store as a list
+        ( setf move ( list ( read ) ( read ) ) )
     )
     
     ( format t "~%GAME OVER~%")
