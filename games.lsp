@@ -66,8 +66,19 @@
     ( format t "like to place a ~d stone. Remember, you must outflank " player )
     ( format t "at least one White stone, or forfeit your move.~%~%" )
     
-    ( print-board )
+    ;Loop player moves
+    ( do
+        ;Local vars
+        ( ( move-num 0 ( 1+ move-num ) ) )
+        
+        ;Termination Condition - PLACEHOLDER
+        ( ( > move-num 10 ) )
+        
+        ;Print board and request next move
+        ( print-board )
+    )
     
+    ( format t "~%GAME OVER~%")
 )
 
 
