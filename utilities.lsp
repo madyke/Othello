@@ -12,40 +12,20 @@
 
 )
 
-; Convers the board to a list of lists. Not currently used but 
-; may be used for bound checking
-(defun convert-board ()
-    (let ((localBoard nil) (row nil))
-        (dotimes (i (list-length *BOARD*))
-             ;Add row to board
-             (if (and (not (eq i 0)) (eq (mod i 7) 0))
-                 (push localBoard row)
-                 (setf row nil)
-             )
-             ;Add i to row
-             (push row i)
-        )
-    )
-)
-
 (defun convertToPosition (rowCol)
     ;(format t "ConvertToPosition: ~s~%" rowCol)
     ;(format t "POS: ~s~%" (+ (* (1- (car rowCol)) 8) (1- (nth 1 rowCol))))
-    (format t "POS Value: ~s~%" (nth (+ (* (1- (car rowCol)) 8) (1- (nth 1 rowCol))) *BOARD*)) 
     (+ (* (1- (car rowCol)) 8) (1- (nth 1 rowCol)))
 )
 
 (defun convertToRowCol (pos)
     (let ( (rowCol nil) (row nil) (col nil) )
-        (format t "Pos: ~s~%" pos)
         (push (1+ (mod pos 8)) rowCol)
         (push (1+ (nth-value 0 (floor pos 8))) rowCol)
     )
 )
 
-;TODO Fix bounds checking. Probably rename hasJumped
-;Add the Correct direction stuff
-(defun test-path (direction hasJumped label rowCol validMove)
+(defun test-path (direction hasJumped label rowCol)
     (let ( (localRowCol (copy-list rowCol)) )
         (cond 
             ((eq direction 'Up) (setf (car localRowCol) (1- (car localRowCol))))
@@ -58,26 +38,25 @@
             ((eq direction 'UpLeft) (setf (car localRowCol) (1- (car localRowCol))) (setf (nth 1 localRowCol) (1- (nth 1 localRowCol))))
         )
 
-        (format t "Direction: ~s localRowCol in test-path: ~s~%" direction localRowCol)
+        ;(format t "Direction: ~s localRowCol in test-path: ~s~%" direction localRowCol)
 
         (cond
             ;Fell off board
-            ((OR (> (car localRowCol) 8) (> (nth 1 localRowCol) 8) (< (car localRowCol) 1) (< (nth 1 localRowCol) 1)) (progn (format t "Direction: ~s Fell Off Board~%" direction) (return-from test-path nil)))
+            ((OR (> (car localRowCol) 8) (> (nth 1 localRowCol) 8) (< (car localRowCol) 1) (< (nth 1 localRowCol) 1)) (return-from test-path nil))
             ;if test is true then we have already "jumped" an opposing tile
             ;and if there is a space then we have a valid move
             (
                 (string-equal (nth (convertToPosition localRowCol) *BOARD*) "-") 
-                (format t "DASH~%") 
 		(if (eq hasJumped t)
-                    (progn (format t "SUCCESS~%") (setf (car validMove) (car localRowCol)) (setf (nth 1 validMove) (nth 1 localRowCol)) (return-from test-path t))
-                    (progn (format t "FAIL~%") (return-from test-path nil))
+                    (return-from test-path localRowCol)
+                    (return-from test-path nil)
                 )
             )
             ;If the square has the current player's tile then it's not valid
-            ((eq (nth (convertToPosition localRowCol) *BOARD*) label) (format t "OUR TILE~%") (return-from test-path nil))
+            ((eq (nth (convertToPosition localRowCol) *BOARD*) label) (return-from test-path nil))
             ;The square is an opposing player's tile so we have to check the next
             ;position to see if it is either blank or the opposing player's tile again
-            (t (setf hasJumped t) (test-path direction hasJumped label localRowCol validMove))
+            (t (setf hasJumped t) (if(setf localRowCol (test-path direction hasJumped label localRowCol)) (return-from test-path localRowCol) (return-from test-path nil)))
         )
     )
 )
@@ -88,7 +67,7 @@
  | 	that against the move the player enters
  |#
 (defun get-moves (player)
-    (let ( (moves nil) (label nil) (move nil) (validMove '(0 0)) )
+    (let ( (moves '()) (label nil) (move nil) (validMove nil) )
         (if (eq player 'black)
             (setf label 'B)
             (setf label 'W)
@@ -98,20 +77,19 @@
             ;If the board position is for the current player
             (when (eq (nth i *BOARD*) label)
                 (setf move (convertToRowCol i))
-                (format t "Move: ~s~%" move)
-                    ;Checks each direction Up, UpRight, Right, DownRight,
-                    ;Down, DownLeft, Left, UpLeft
-                (if (test-path 'Up nil label move validMove) (format t "Valid Move: ~s~%" validMove) (setf moves (cons moves validMove)))
-                (if (test-path 'UpRight nil label move validMove) (format t "Valid Move: ~s~%" validMove) (setf moves (cons moves validMove)))
-                (if (test-path 'Right nil label move validMove) (format t "Valid Move: ~s~%" validMove) (setf moves (cons moves validMove)))
-                (if (test-path 'DownRight nil label move validMove) (format t "Valid Move: ~s~%" validMove) (setf moves (cons moves validMove)))
-                (if (test-path 'Down nil label move validMove) (format t "Valid Move: ~s~%" validMove) (setf moves (cons moves validMove)))
-                (if (test-path 'DownLeft nil label move validMove) (format t "Valid Move: ~s~%" validMove) (setf moves (cons moves validMove)))
-                (if (test-path 'Left nil label move validMove) (format t "Valid Move: ~s~%" validMove) (setf moves (cons moves validMove)))
-                (if (test-path 'UpLeft nil label move validMove) (format t "Valid Move: ~s~%" validMove) (setf moves (cons moves validMove)))
+                ;Checks each direction Up, UpRight, Right, DownRight,
+                ;Down, DownLeft, Left, UpLeft
+                (if (setf validMove (test-path 'Up nil label move)) (push validMove moves))
+                (if (setf validMove (test-path 'UpRight nil label move)) (push validMove moves))
+                (if (setf validMove (test-path 'Right nil label move)) (push validMove moves))
+                (if (setf validMove (test-path 'DownRight nil label move)) (push validMove moves))
+                (if (setf validMove (test-path 'Down nil label move)) (push validMove moves))
+                (if (setf validMove (test-path 'DownLeft nil label move)) (push validMove moves))
+                (if (setf validMove (test-path 'Left nil label move)) (push validMove moves))
+                (if (setf validMove (test-path 'UpLeft nil label move)) (push validMove moves))
             )
         )
-        (format t "Moves: ~s~%" moves)
+        moves
     )
 )
 

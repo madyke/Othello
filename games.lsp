@@ -35,8 +35,7 @@
             ( setf move ( list ( read ) ( read ) ) )
 
             ;TODO Remove progn
-            ;(if (member move moves)
-            (if (eq t t)
+            (if (find move moves :test #'equal)
                 (progn 
                     (flip-tiles move player) 
                     (if (eq player 'black)
