@@ -19,10 +19,21 @@
         ;Loop player moves
         ( do
             ;Local vars
-            ( ( move-num 0 ( 1+ move-num ) ) )
+            ( ( prev-no-moves NIL ) )
         
-            ;Termination Condition - PLACEHOLDER
-            ( ( > move-num 10 ) )
+            ;Termination Condition & termination statements
+            (
+                ;Termination condition
+                ( and 
+                    ;If current player has no moves
+                    ( not ( setf moves ( get-moves player ) ) )
+                    ;If previous player had no moves
+                    ( not ( null prev-no-moves ) )
+                )
+                
+                ;Game over, print info
+                ( format t "~%~s has no available moves.~%~%GAME OVER" player )
+            )
 
             ;TODO Restructure this fucntion so get-moves isn't run on failure
             (setf moves (get-moves player))
@@ -39,7 +50,9 @@
                         (setf player 'white)
                         (setf player 'black)
                     )
-
+                    
+                    ;Mark that previous player had no available moves
+                    ( setf prev-no-moves 1 )
                 )
                 
                 ;Else player has at least one move
@@ -71,8 +84,6 @@
                 )
             )
         )
-    
-        ( format t "~%GAME OVER~%")
     )
 )
 
