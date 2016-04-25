@@ -51,16 +51,22 @@
                     ;Get users move and store as a list
                     ( setf move ( list ( read ) ( read ) ) )
 
-                    ;TODO Remove progn
-                    (if (find move moves :test #'equal)
-                        (progn 
-                            (flip-tiles move player) 
-                            (if (eq player 'black)
-                                (setf player 'white)
-                                (setf player 'black)
+                    ;Check users entered move
+                    (cond
+                        ;If move was valid
+                        ( ( find move moves :test #'equal )
+                            ;Perform move and switch current player
+                            ( flip-tiles move player ) 
+                            ( if ( eq player 'black )
+                                ( setf player 'white )
+                                ( setf player 'black )
                             )
                         )
-                        (format t "~s is an incorrect move~%" move)
+                        ;If move was invalid
+                        ( t
+                            ;Inform user
+                            (format t "~s is an incorrect move~%" move)
+                        )
                     )   
                 )
             )
