@@ -27,24 +27,43 @@
             ;TODO Restructure this fucntion so get-moves isn't run on failure
             (setf moves (get-moves player))
         
-            ;Print board and request next move
-            ( print-board )
-            ( format t "~%What is ~s player's move [row col]? " player)
-        
-            ;Get users move and store as a list
-            ( setf move ( list ( read ) ( read ) ) )
-
-            ;TODO Remove progn
-            (if (find move moves :test #'equal)
-                (progn 
-                    (flip-tiles move player) 
+            ;Check if current player has available moves
+            ( cond
+                ;If current player has no moves
+                ( ( null moves )
+                    ;Inform player
+                    ( format t "~%~s has no available moves.~%" player )
+                    
+                    ;Swap current player
                     (if (eq player 'black)
                         (setf player 'white)
                         (setf player 'black)
                     )
+
                 )
-                (format t "~s is an incorrect move~%" move)
-            )   
+                
+                ;Else player has at least one move
+                ( t
+                    ;Print board and request next move
+                    ( print-board )
+                    ( format t "~%What is ~s player's move [row col]? " player)
+                
+                    ;Get users move and store as a list
+                    ( setf move ( list ( read ) ( read ) ) )
+
+                    ;TODO Remove progn
+                    (if (find move moves :test #'equal)
+                        (progn 
+                            (flip-tiles move player) 
+                            (if (eq player 'black)
+                                (setf player 'white)
+                                (setf player 'black)
+                            )
+                        )
+                        (format t "~s is an incorrect move~%" move)
+                    )   
+                )
+            )
         )
     
         ( format t "~%GAME OVER~%")
