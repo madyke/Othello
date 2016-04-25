@@ -78,9 +78,12 @@
                         ;If move was invalid
                         ( t
                             ;Inform user
-                            (format t "~s is an incorrect move~%" move)
+                            (format t "~%~s is not a valid move for ~s~%~%" move player)
                         )
-                    )   
+                    )
+                    
+                    ;Mark that previous player had available moves
+                    ( setf prev-no-moves NIL )
                 )
             )
         )
