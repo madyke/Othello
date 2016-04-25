@@ -33,6 +33,7 @@
                 
                 ;Game over, print info
                 ( format t "~%~s has no available moves.~%~%GAME OVER" player )
+                ( print-results )
             )
 
             ;TODO Restructure this fucntion so get-moves isn't run on failure
