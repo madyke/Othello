@@ -26,12 +26,8 @@
  |
  |#
 ( defun othello ( &optional ( player nil ) )
-    ;Load program files
-    ( load 'utilities.lsp )
-    ( load 'games.lsp )
-
+    ;Call initialization to get board and other files
     (othello-init)
-
     
     ;Ask user to select game type
     ( format t "The following game types are available:~%" )
@@ -71,6 +67,31 @@
             ( play-EvE-game )
         )
     )
+)
+
+
+#|
+ | Function: othello-init
+ |
+ | Description:
+ |
+ |#
+( defun othello-init ()
+    ;Load program files
+    ( load "utilities.lsp" )
+    ( load "games.lsp" )
+    ( load "minimax.lsp" )
+
+    ;Define global board
+    ( defvar *BOARD* '( - - - - - - - -
+                        - - - - - - - -
+                        - - - - - - - -
+                        - - - W B - - -
+                        - - - B W - - -
+                        - - - - - - - -
+                        - - - - - - - -
+                        - - - - - - - - )
+    ) 
 )
 
 

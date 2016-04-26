@@ -1,17 +1,3 @@
-#|
- |	Initialization
- |#
-(defun othello-init ()
-    ( defvar *BOARD* '( - - - - - - - -
-                        - - - - - - - -
-                        - - - - - - - -
-                        - - - W B - - -
-                        - - - B W - - -
-                        - - - - - - - -
-                        - - - - - - - -
-                        - - - - - - - - ) ) 
-)
-
 (defun convertToPosition (rowCol)
     ;(format t "ConvertToPosition: ~s~%" rowCol)
     ;(format t "POS: ~s~%" (+ (* (1- (car rowCol)) 8) (1- (nth 1 rowCol))))

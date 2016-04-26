@@ -26,8 +26,6 @@ Functions called:
           Note: these functions may need additional arguments.
 |#
 
-(load "utilities.lsp")
-
 #|
  | 	This is the move function used for the AI in the tournament
  |#

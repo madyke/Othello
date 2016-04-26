@@ -1,4 +1,3 @@
-(load "minimax.lsp")
 #|
  | Function: play-PvP-game
  |
