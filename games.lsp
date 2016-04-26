@@ -99,15 +99,27 @@
  |#
 ( defun play-PvE-game ( player )
     (let ( (moves nil) (human player) )
-        ;Print game information
-        ( format t "~%OK! You will be playing ~d. When asked for your " player )
-        ( format t "move, please enter the row and column in which you would " )
-        ( format t "like to place a ~d stone. Remember, you must outflank " player )
-        ( format t "at least one White stone, or forfeit your move.~%~%" )
+        ;If user has not selected their color
+        ( when ( null human ) 
+            ;Ask user if they want to go first
+                ( format t "Would you like to go first (y/n)? " )
 
-        (setf player 'white)
+            ;If user responds 'y', set to black, else set to white
+            ( if ( equal ( read ) 'y )
+                ( setf human 'black )
+                ( setf human 'white )
+            )
+        )
+
+        ;Print game information
+        ( format t "~%OK! You will be playing ~d. When asked for your " human )
+        ( format t "move, please enter the row and column in which you would " )
+        ( format t "like to place a ~d stone. Remember, you must outflank " human )
+        ( format t "at least one White stone, or forfeit your move.~%~%" )
+        
+        (setf player 'black)
     
-        ;Loop player moves
+        ;Play game
         ( do
             ;Local vars
             ( ( prev-no-moves NIL ) )
