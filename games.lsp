@@ -138,11 +138,6 @@
                 ( format t "~%~s has no available moves.~%~%GAME OVER~%~%" player )
                 ( print-results *BOARD* )
             )
-
-            ;TODO Restructure this function so get-moves isn't run on failure
-            (setf moves (get-moves player *BOARD*))
-            (format t "Moves: ~s~%" moves)
-
        
             ;Check if current player has available moves
             ( cond
@@ -196,7 +191,7 @@
                         (t 
                             (format t "Player: ~s~%" player)
                             (print-board *BOARD*)
-                            (setf move (make-move *BOARD* player 1))
+                            (setf move (make-move *BOARD* player 4))
                             ( setf *BOARD* (flip-tiles move player *BOARD*)) 
                             ( if ( eq player 'black )
                                  ( setf player 'white )
