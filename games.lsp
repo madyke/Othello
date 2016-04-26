@@ -31,7 +31,7 @@
                 
                 ;Game over, print info
                 ( format t "~%~s has no available moves.~%~%GAME OVER~%~%" player )
-                ( print-results )
+                ( print-results *BOARD* )
             )
 
             ;TODO Restructure this fucntion so get-moves isn't run on failure
@@ -100,7 +100,7 @@
 ( defun play-PvE-game ( player )
     (let ( (moves nil) (human player) )
         ;If user has not selected their color
-        ( when ( null human ) 
+        #|( when ( null human ) 
             ;Ask user if they want to go first
                 ( format t "Would you like to go first (y/n)? " )
 
@@ -109,7 +109,7 @@
                 ( setf human 'black )
                 ( setf human 'white )
             )
-        )
+        )|#
 
         ;Print game information
         ( format t "~%OK! You will be playing ~d. When asked for your " human )
@@ -136,7 +136,7 @@
                 
                 ;Game over, print info
                 ( format t "~%~s has no available moves.~%~%GAME OVER~%~%" player )
-                ( print-results )
+                ( print-results *BOARD* )
             )
 
             ;TODO Restructure this function so get-moves isn't run on failure

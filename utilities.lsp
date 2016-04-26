@@ -199,7 +199,7 @@
  |   This function prints the results after a game ends
  |
  |#
-( defun print-results ()
+( defun print-results ( board )
     ;Print final board state
     ( print-board *BOARD* )
     

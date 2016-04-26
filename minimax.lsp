@@ -104,7 +104,7 @@ Functions called:
 )
 
 (defun static ( board player )
-    ( let 
+    #|( let 
         ;Local vars
         (
             ( currPlayer ( if ( string-equal player 'black ) 'B 'W ) )
@@ -115,7 +115,8 @@ Functions called:
         ( / ( - ( count-pieces currPlayer board ) ( count-pieces opponent board ) )
             ( + ( count-pieces currPlayer board ) ( count-pieces opponent board ) )
         )
-    )
+    )|#
+    (setf x 1)
 )
 
 (defun move-generator (player board)
