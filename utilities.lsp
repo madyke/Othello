@@ -75,7 +75,7 @@
                 (if (setf validMove (test-path 'UpLeft nil label move board)) (push validMove moves))
             )
         )
-        moves
+        (delete-duplicates moves :test #'equal)
     )
 )
 ;TODO Clean this up
