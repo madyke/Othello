@@ -201,7 +201,7 @@
  |#
 ( defun print-results ()
     ;Print final board state
-    ( print-board )
+    ( print-board *BOARD* )
     
     ;Print how many pieces each player captured
     ( format t "~%Final Score:~%")
