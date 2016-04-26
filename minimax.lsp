@@ -45,15 +45,15 @@ Functions called:
     ; if we have searched deep enough, or there are no successors,
     ; return position evaluation and nil for the path
       (if (or (eq depth 0) (null (move-generator player board)))
-        (list (static position) nil)
+        (list (static board player ) nil)
 
         ; otherwise, generate successors and run minimax recursively
-        (let
+        (let*
             (
                 (localBoard (copy-list board))
 
                 ; generate list of sucessor positions
-                (successors nil)
+                (successors (move-generator player localBoard))
 
                 ; initialize current best path to nil
                 (best-path nil)
@@ -65,14 +65,12 @@ Functions called:
                 succ-value
                 succ-score
             )
-            (setf successors (move-generator player localBoard))
 
             ; explore possible moves by looping through successor positions
             (dolist (successor successors)
 
-                (setf localBoard (copy-list board))
-
-                (setf localBoard (flip-tiles successor player localBoard))
+                ;Reset localBoard for each successor
+                (setf localBoard (flip-tiles successor player (copy-list board)))
 
                 ; perform recursive DFS exploration of game tree
                 (setq succ-value 
@@ -105,8 +103,19 @@ Functions called:
     )
 )
 
-(defun static (position)
-    (setf x 1)
+(defun static ( board player )
+    ( let 
+        ;Local vars
+        (
+            ( currPlayer ( if ( string-equal player 'black ) 'B 'W ) )
+            ( opponent ( if ( string-equal player 'black ) 'W 'B ) )
+        )
+        
+        ;Coin parity heuristic
+        ( / ( - ( count-pieces currPlayer board ) ( count-pieces opponent board ) )
+            ( + ( count-pieces currPlayer board ) ( count-pieces opponent board ) )
+        )
+    )
 )
 
 (defun move-generator (player board)
