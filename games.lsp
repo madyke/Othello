@@ -138,6 +138,9 @@
                 ( format t "~%~s has no available moves.~%~%GAME OVER~%~%" player )
                 ( print-results *BOARD* )
             )
+            
+            ;DEBUG
+            ( format t "~%~%Moves:~s~%~%" moves )
        
             ;Check if current player has available moves
             ( cond
@@ -191,7 +194,7 @@
                         (t 
                             (format t "Player: ~s~%" player)
                             (print-board *BOARD*)
-                            (setf move (make-move *BOARD* player 4))
+                            (setf move (make-move *BOARD* player 2))
                             ( setf *BOARD* (flip-tiles move player *BOARD*)) 
                             ( if ( eq player 'black )
                                  ( setf player 'white )
@@ -201,6 +204,10 @@
                     )
                 )
             )
+            
+            ;DEBUG
+            ( format t "~%~s~%" move )
+            (read)
         )
     )
 )

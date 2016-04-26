@@ -37,10 +37,10 @@ Functions called:
         (setf player 'white)
     )
     ;(format t "Minimax Return: ~s~%" (caadr (minimax 0 ply player board)))
-    (caadr (minimax 0 ply player board))
+    (caadr (minimax ply player board))
 )
 
-(defun minimax (position depth player board)
+(defun minimax (depth player board)
 
     ; if we have searched deep enough, or there are no successors,
     ; return position evaluation and nil for the path
@@ -75,7 +75,6 @@ Functions called:
                 ; perform recursive DFS exploration of game tree
                 (setq succ-value 
                     (minimax 
-                        (convertToPosition successor) 
                         (1- depth)                 
 			            (if (eq player 'black)
 				            'white
@@ -88,6 +87,9 @@ Functions called:
                 ; change sign every ply to reflect alternating selection
                 ; of MAX/MIN player (maximum/minimum value)
                 (setq succ-score (- (car succ-value)))
+                
+                ;DEBUG
+                ( format t "~%~s: ~s: ~d~%" depth successor succ-value )
 
                 ; update best value and path if a better move is found
                 ; (note that path is being stored in reverse order)
@@ -95,6 +97,7 @@ Functions called:
                       (setq best-score succ-score)
                       (setq best-path (cons successor (cdr succ-value)))
                 )
+
             )
 
             ; return (value path) list when done
@@ -103,8 +106,9 @@ Functions called:
     )
 )
 
+
 (defun static ( board player )
-    #|( let 
+    ( let 
         ;Local vars
         (
             ( currPlayer ( if ( string-equal player 'black ) 'B 'W ) )
@@ -115,8 +119,7 @@ Functions called:
         ( / ( - ( count-pieces currPlayer board ) ( count-pieces opponent board ) )
             ( + ( count-pieces currPlayer board ) ( count-pieces opponent board ) )
         )
-    )|#
-    (setf x 1)
+    )
 )
 
 (defun move-generator (player board)
