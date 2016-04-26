@@ -204,3 +204,48 @@
         )
     )
 )
+
+
+#|
+ | Function: print-results
+ |
+ | Description:
+ |   This function prints the results after a game ends
+ |
+ |#
+( defun print-results ()
+    ;Print final board state
+    ( print-board )
+    
+    ;Print how many pieces each player captured
+    ( format t "~%Final Score:~%")
+    ( format t "  BLACK: ~s" ( count-pieces "B" ) )
+    ( format t "  WHITE: ~s" ( count-pieces "W" ) )
+)
+
+
+#|
+ | Function: count-pieces
+ |
+ | Description:
+ |   This function counts the number of pieces the specified player has
+ |
+ | Parameters:
+ |   
+ |
+ |#
+( defun count-pieces ( target )
+    ( let 
+        ;Local var - tracks number of occurences
+        ( ( occur 0 ) )
+        
+        ;Loop over each spot on the board
+        ( dotimes ( i ( list-length *BOARD* ) )        
+            ;When board spot is occupied by player's pieces
+            ( when ( string-equal target ( nth i *BOARD* ) ) ( setf occur ( 1+ occur ) ) )
+        )
+        
+        ;Return number of occurences
+        ( return-from count-pieces occur )
+    )
+)
