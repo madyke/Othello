@@ -100,7 +100,7 @@
 ( defun play-PvE-game ( player )
     (let ( (moves nil) (human player) )
         ;If user has not selected their color
-        #|( when ( null human ) 
+        ( when ( null human ) 
             ;Ask user if they want to go first
                 ( format t "Would you like to go first (y/n)? " )
 
@@ -109,7 +109,7 @@
                 ( setf human 'black )
                 ( setf human 'white )
             )
-        )|#
+        )
 
         ;Print game information
         ( format t "~%OK! You will be playing ~d. When asked for your " human )
@@ -194,7 +194,7 @@
                         (t 
                             (format t "Player: ~s~%" player)
                             (print-board *BOARD*)
-                            (setf move (make-move *BOARD* player 2))
+                            (setf move (make-move *BOARD* player 3))
                             ( setf *BOARD* (flip-tiles move player *BOARD*)) 
                             ( if ( eq player 'black )
                                  ( setf player 'white )
@@ -206,8 +206,8 @@
             )
             
             ;DEBUG
-            ( format t "~%~s~%" move )
-            (read)
+            ;( format t "~%~s~%" move )
+            ;(read)
         )
     )
 )

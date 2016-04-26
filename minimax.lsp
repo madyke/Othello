@@ -89,7 +89,7 @@ Functions called:
                 (setq succ-score (- (car succ-value)))
                 
                 ;DEBUG
-                ( format t "~%~s: ~s: ~d~%" depth successor succ-score )
+                ;( format t "~%~s: ~s: ~d~%" depth successor succ-score )
 
                 ; update best value and path if a better move is found
                 ; (note that path is being stored in reverse order)
@@ -97,7 +97,6 @@ Functions called:
                       (setq best-score succ-score)
                       (setq best-path (cons successor (cdr succ-value)))
                 )
-
             )
 
             ; return (value path) list when done
