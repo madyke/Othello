@@ -13,19 +13,8 @@
  | Usage:
  |#
 
-;;------------------------------ Global Variables ------------------------------;
-
-( defvar *BOARD* '( - - - - - - - -
-                    - - - - - - - -
-                    - - - - - - - -
-                    - - - W B - - -
-                    - - - B W - - -
-                    - - - - - - - -
-                    - - - - - - - -
-                    - - - - - - - - ) ) ;Othello board state
-
-
 ;--------------------------------- Functions ----------------------------------;
+
 
 #|
  | Function: othello
@@ -40,6 +29,9 @@
     ;Load program files
     ( load 'utilities.lsp )
     ( load 'games.lsp )
+
+    (othello-init)
+
     
     ;Ask user to select game type
     ( format t "The following game types are available:~%" )

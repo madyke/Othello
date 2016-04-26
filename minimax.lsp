@@ -17,10 +17,6 @@ Returns:  (value path)
 
 Functions called:
 
-          (deepenough depth) -
-              predicate that returns T if the current position has reached
-              the desired search depth, NIL otherwise.
-
           (move-generator position) -
               generates successors to the position.
 
@@ -30,18 +26,36 @@ Functions called:
           Note: these functions may need additional arguments.
 |#
 
-(defun minimax (position depth)
+(load "utilities.lsp")
+
+#|
+ | 	This is the move function used for the AI in the tournament
+ |#
+(defun make-move (board player ply)
+    (when (eq player 'B)
+        (setf player 'black)
+    )
+    (when (eq player 'W)
+        (setf player 'white)
+    )
+    ;(format t "Minimax Return: ~s~%" (caadr (minimax 0 ply player board)))
+    (caadr (minimax 0 ply player board))
+)
+
+(defun minimax (position depth player board)
 
     ; if we have searched deep enough, or there are no successors,
     ; return position evaluation and nil for the path
-    (if (or (deepenough depth) (null (move-generator position)))
+      (if (or (eq depth 0) (null (move-generator player board)))
         (list (static position) nil)
 
         ; otherwise, generate successors and run minimax recursively
         (let
             (
+                (localBoard (copy-list board))
+
                 ; generate list of sucessor positions
-                (successors (move-generator position))
+                (successors nil)
 
                 ; initialize current best path to nil
                 (best-path nil)
@@ -53,12 +67,27 @@ Functions called:
                 succ-value
                 succ-score
             )
+            (setf successors (move-generator player localBoard))
 
             ; explore possible moves by looping through successor positions
             (dolist (successor successors)
 
+                (setf localBoard (copy-list board))
+
+                (setf localBoard (flip-tiles successor player localBoard))
+
                 ; perform recursive DFS exploration of game tree
-                (setq succ-value (minimax successor (1- depth)))
+                (setq succ-value 
+                    (minimax 
+                        (convertToPosition successor) 
+                        (1- depth)                 
+			            (if (eq player 'black)
+				            'white
+				            'black
+			            )
+                        localBoard
+                    )
+                )
 
                 ; change sign every ply to reflect alternating selection
                 ; of MAX/MIN player (maximum/minimum value)
@@ -76,4 +105,12 @@ Functions called:
             (list best-score best-path)
         )
     )
+)
+
+(defun static (position)
+    (setf x 1)
+)
+
+(defun move-generator (player board)
+    (get-moves player board)         
 )

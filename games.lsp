@@ -1,5 +1,4 @@
-(load "utilities.lsp")
-
+(load "minimax.lsp")
 #|
  | Function: play-PvP-game
  |
@@ -26,18 +25,18 @@
                 ;Termination condition
                 ( and 
                     ;If current player has no moves
-                    ( not ( setf moves ( get-moves player ) ) )
+                    ( not ( setf moves ( get-moves player *BOARD*) ) )
                     ;If previous player had no moves
                     ( not ( null prev-no-moves ) )
                 )
                 
                 ;Game over, print info
-                ( format t "~%~s has no available moves.~%~%GAME OVER" player )
+                ( format t "~%~s has no available moves.~%~%GAME OVER~%~%" player )
                 ( print-results )
             )
 
             ;TODO Restructure this fucntion so get-moves isn't run on failure
-            (setf moves (get-moves player))
+            (setf moves (get-moves player *BOARD*))
         
             ;Check if current player has available moves
             ( cond
@@ -59,7 +58,7 @@
                 ;Else player has at least one move
                 ( t
                     ;Print board and request next move
-                    ( print-board )
+                    ( print-board *BOARD*)
                     ( format t "~%What is ~s player's move [row col]? " player)
                 
                     ;Get users move and store as a list
@@ -70,7 +69,7 @@
                         ;If move was valid
                         ( ( find move moves :test #'equal )
                             ;Perform move and switch current player
-                            ( flip-tiles move player ) 
+                            ( setf *BOARD* (flip-tiles move player *BOARD*) )
                             ( if ( eq player 'black )
                                 ( setf player 'white )
                                 ( setf player 'black )
@@ -100,48 +99,104 @@
  |
  |#
 ( defun play-PvE-game ( player )
-    ;Set players piece color
-    ( cond
-        ;If no starting player given
-        ( ( null player )
-            ;Ask user if they want to go first
-            ( format t "Would you like to go first (y/n)? " )
-            
-            ;If user responds 'y', set to black, else set to white
-            ( if ( equal ( read ) 'y )
-                ( setf player 'black )
-                ( setf player 'white )
+    (let ( (moves nil) (human player) )
+        ;Print game information
+        ( format t "~%OK! You will be playing ~d. When asked for your " player )
+        ( format t "move, please enter the row and column in which you would " )
+        ( format t "like to place a ~d stone. Remember, you must outflank " player )
+        ( format t "at least one White stone, or forfeit your move.~%~%" )
+
+        (setf player 'white)
+    
+        ;Loop player moves
+        ( do
+            ;Local vars
+            ( ( prev-no-moves NIL ) )
+        
+            ;Termination Condition & termination statements
+            (
+                ;Termination condition
+                ( and 
+                    ;If current player has no moves
+                    ( not ( setf moves ( get-moves player *BOARD*) ) )
+                    ;If previous player had no moves
+                    ( not ( null prev-no-moves ) )
+                )
+                
+                ;Game over, print info
+                ( format t "~%~s has no available moves.~%~%GAME OVER~%~%" player )
+                ( print-results )
             )
-        )
-        ;If starting player given
-        ( t
-            ;If user entered "BLACK", set to black, else set to white
-            ( if ( string-equal player "BLACK" )
-                ( setf player 'black )
-                ( setf player 'white )
+
+            ;TODO Restructure this function so get-moves isn't run on failure
+            (setf moves (get-moves player *BOARD*))
+            (format t "Moves: ~s~%" moves)
+
+       
+            ;Check if current player has available moves
+            ( cond
+                ;If current player has no moves
+                ( ( null moves )
+                    ;Inform player
+                    ( format t "~%~s has no available moves.~%" player )
+
+                    ;Swap current player
+                    (if (eq player 'black)
+                        (setf player 'white)
+                        (setf player 'black)
+                    )
+                    
+                    ;Mark that previous player had no available moves
+                    ( setf prev-no-moves 1 )
+                )
+                
+                ;Else player has at least one move
+                ( t
+                    (cond
+                        ( (string-equal human player)                       
+                            ;Print board and request next move
+                            ( print-board *BOARD*)
+                            ( format t "~%What is ~s player's move [row col]? " player)
+                
+                            ;Get users move and store as a list
+                            ( setf move ( list ( read ) ( read ) ) )
+
+                            ;Check users entered move
+                            (cond
+                                ;If move was valid
+                                ( ( find move moves :test #'equal )
+                                    ;Perform move and switch current player
+                                    ( setf *BOARD* (flip-tiles move player *BOARD*)) 
+                                    ( if ( eq player 'black )
+                                        ( setf player 'white )
+                                        ( setf player 'black )
+                                    )
+                                )
+                                ;If move was invalid
+                                ( t
+                                    ;Inform user
+                                    (format t "~%~s is not a valid move for ~s~%~%" move player)
+                                )
+                            )
+                    
+                            ;Mark that previous player had available moves
+                            ( setf prev-no-moves NIL )
+                        )
+                        (t 
+                            (format t "Player: ~s~%" player)
+                            (print-board *BOARD*)
+                            (setf move (make-move *BOARD* player 1))
+                            ( setf *BOARD* (flip-tiles move player *BOARD*)) 
+                            ( if ( eq player 'black )
+                                 ( setf player 'white )
+                                 ( setf player 'black )
+                            )
+                        )
+                    )
+                )
             )
         )
     )
-    
-    ;Print game information
-    ( format t "~%OK! You will be playing ~d. When asked for your " player )
-    ( format t "move, please enter the row and column in which you would " )
-    ( format t "like to place a ~d stone. Remember, you must outflank " player )
-    ( format t "at least one White stone, or forfeit your move.~%~%" )
-    
-    ;Loop player moves
-    ( do
-        ;Local vars
-        ( ( move-num 0 ( 1+ move-num ) ) )
-        
-        ;Termination Condition - PLACEHOLDER
-        ( ( > move-num 10 ) )
-        
-        ;Print board and request next move
-        ( print-board )
-    )
-    
-    ( format t "~%GAME OVER~%")
 )
 
 
