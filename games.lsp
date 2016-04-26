@@ -221,5 +221,62 @@
  |
  |#
 ( defun play-EvE-game ()
+    (let ( (moves nil) )
+        ;Print game information
+        (setf player 'black)
     
+        ;Play game
+        ( do
+            ;Local vars
+            ( ( prev-no-moves NIL ) )
+        
+            ;Termination Condition & termination statements
+            (
+                ;Termination condition
+                ( and 
+                    ;If current player has no moves
+                    ( not ( setf moves ( get-moves player *BOARD*) ) )
+                    ;If previous player had no moves
+                    ( not ( null prev-no-moves ) )
+                )
+                
+                ;Game over, print info
+                ( format t "~%~s has no available moves.~%~%GAME OVER~%~%" player )
+                ( print-results *BOARD* )
+            )
+            
+            ;DEBUG
+            ( format t "~%~%Moves:~s~%~%" moves )
+       
+            ;Check if current player has available moves
+            ( cond
+                ;If current player has no moves
+                ( ( null moves )
+                    ;Inform player
+                    ( format t "~%~s has no available moves.~%" player )
+
+                    ;Swap current player
+                    (if (eq player 'black)
+                        (setf player 'white)
+                        (setf player 'black)
+                    )
+                    
+                    ;Mark that previous player had no available moves
+                    ( setf prev-no-moves 1 )
+                )
+                
+                ;Else player has at least one move
+                ( t
+                    (format t "Player: ~s~%" player)
+                    (print-board *BOARD*)
+                    (setf move (make-move *BOARD* player 3))
+                    ( setf *BOARD* (flip-tiles move player *BOARD*)) 
+                    ( if ( eq player 'black )
+                         ( setf player 'white )
+                         ( setf player 'black )
+                    )
+                )
+            )
+        )
+    )
 )
