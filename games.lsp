@@ -269,7 +269,7 @@
                 ( t
                     (format t "Player: ~s~%" player)
                     (print-board *BOARD*)
-                    (setf move (make-move *BOARD* player 3))
+                    (setf move (make-move *BOARD* player 4))
                     ( setf *BOARD* (flip-tiles move player *BOARD*)) 
                     ( if ( eq player 'black )
                          ( setf player 'white )

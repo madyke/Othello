@@ -36,16 +36,16 @@ Functions called:
     (when (eq player 'W)
         (setf player 'white)
     )
-    ;(format t "Minimax Return: ~s~%" (caadr (minimax 0 ply player board)))
-    (caadr (minimax ply player board))
+    ;(format t "Minimax Return: ~s~%" (minimax ply player player board -1000000 1000000))
+    (caadr (minimax ply player player board -1000000 1000000))
 )
 
-(defun minimax (depth player board)
+(defun minimax (depth currPlayer maxPlayer board a b)
 
     ; if we have searched deep enough, or there are no successors,
     ; return position evaluation and nil for the path
-      (if (or (eq depth 0) (null (move-generator player board)))
-        (list (static board player ) nil)
+      (if (or (eq depth 0) (null (move-generator currPlayer board)))
+        (list (static board maxPlayer ) nil)
 
         ; otherwise, generate successors and run minimax recursively
         (let*
@@ -53,13 +53,18 @@ Functions called:
                 (localBoard (copy-list board))
 
                 ; generate list of sucessor positions
-                (successors (move-generator player localBoard))
+                (successors (move-generator currPlayer localBoard))
 
                 ; initialize current best path to nil
                 (best-path nil)
 
                 ; initialize current best score to negative infinity
-                (best-score -1000000)
+                (best-score 
+                    (if (string-equal currPlayer maxPlayer)
+                        -2000000
+                        2000000
+                    )
+                )
 
                 ; other local variables
                 succ-value
@@ -70,33 +75,47 @@ Functions called:
             (dolist (successor successors)
 
                 ;Reset localBoard for each successor
-                (setf localBoard (flip-tiles successor player (copy-list board)))
+                (setf localBoard (flip-tiles successor currPlayer (copy-list board)))
 
                 ; perform recursive DFS exploration of game tree
                 (setq succ-value 
                     (minimax 
                         (1- depth)                 
-			            (if (eq player 'black)
+			            (if (eq currPlayer 'black)
 				            'white
 				            'black
 			            )
+                        maxPlayer
                         localBoard
+                        a
+                        b
                     )
                 )
-
-                ; change sign every ply to reflect alternating selection
-                ; of MAX/MIN player (maximum/minimum value)
-                (setq succ-score (- (car succ-value)))
                 
                 ;DEBUG
                 ;( format t "~%~s: ~s: ~d~%" depth successor succ-score )
 
+                (setq succ-score (car succ-value))
+
                 ; update best value and path if a better move is found
                 ; (note that path is being stored in reverse order)
-                (when (> succ-score best-score)
-                      (setq best-score succ-score)
-                      (setq best-path (cons successor (cdr succ-value)))
+                (cond 
+                    ((string-equal currPlayer maxPlayer) 
+                        (when 
+                            (> succ-score best-score)
+                            (setq best-score succ-score)
+                            (setq best-path (cons successor (cdr succ-value)))
+                        )
+                    )
+                    (t 
+                        (when 
+                            (< succ-score best-score)
+                            (setq best-score succ-score)
+                            (setq best-path (cons successor (cdr succ-value)))
+                        )
+                    )
                 )
+
             )
 
             ; return (value path) list when done
@@ -110,13 +129,13 @@ Functions called:
     ( let 
         ;Local vars
         (
-            ( currPlayer ( if ( string-equal player 'black ) 'B 'W ) )
-            ( opponent ( if ( string-equal player 'black ) 'W 'B ) )
+            ( maxPlayer ( if ( string-equal player 'black ) 'B 'W ) )
+            ( minPlayer ( if ( string-equal player 'black ) 'W 'B ) )
         )
         
         ;Coin parity heuristic
-        ( / ( - ( count-pieces currPlayer board ) ( count-pieces opponent board ) )
-            ( + ( count-pieces currPlayer board ) ( count-pieces opponent board ) )
+        ( / ( - ( count-pieces maxPlayer board ) ( count-pieces minPlayer board ) )
+            ( + ( count-pieces maxPlayer board ) ( count-pieces minPlayer board ) )
         )
     )
 )
