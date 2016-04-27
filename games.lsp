@@ -194,9 +194,6 @@
                 )
             )
             
-            ;DEBUG
-            ( format t "~%~%Moves:~s~%~%" moves )
-       
             ;Check if current player has available moves
             ( cond
                 ;If current player has no moves
