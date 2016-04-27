@@ -3,14 +3,18 @@
  | Authors: Matt Dyke, Christian Sieh
  | Class: CSC 447 - Artificial Intelligence
  | Instructor: Dr. Weiss
- | Due Date: April 21, 2016
+ | Due Date: April 26, 2016
  |
- | Description:
+ | Description: This is an AI program to play Othello/Reversi. The program 
+ |   offers three game modes - Player vs Player, Player vs Computer, and 
+ |   Computer vs Computer. The computer plays by performing minimax on the game
+ |   board, and improves its efficiency by utilizing alpha-beta pruning.
  |
- | Input:
- | Output:
+ | Input: (optional) player- Which color the player would like to play as
  | Compilation instructions: Run in CLisp on Linux or Windows
  | Usage:
+ |   From command line: clisp othello.lsp [player]
+ |   From CLisp interpreter: (othello [player])
  |#
 
 ;--------------------------------- Functions ----------------------------------;
@@ -19,7 +23,10 @@
 #|
  | Function: othello
  |
- | Description:
+ | Description: This is the main driver function for our Othello program. It 
+ |   begins by calling othello-init, which loads the files and sets up the 
+ |   game board. It then asks the user which type of game they would like to
+ |   play, and then starts the selected game type.
  |
  | Parameters:
  |   &optional ( player nil ) - Color of player's pieces
@@ -73,7 +80,9 @@
 #|
  | Function: othello-init
  |
- | Description:
+ | Description: This is the initialization function for the othello AI program.
+ |   It loads the necessary files and defines the global board state. It is used
+ |   primarily for tournament play.
  |
  |#
 ( defun othello-init ()
@@ -91,7 +100,7 @@
                         - - - - - - - -
                         - - - - - - - -
                         - - - - - - - - )
-    ) 
+    )
 )
 
 

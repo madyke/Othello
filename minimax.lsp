@@ -1,4 +1,16 @@
 #|
+ | Program: Othello
+ | File: minimax.lsp
+ | Authors: Matt Dyke, Christian Sieh
+ |
+ | Description: This file contains the minimax function, along with the 
+ |   heuristics that are used in the static evaluation function.
+ |#
+
+;--------------------------------- Functions ----------------------------------;
+
+
+#|
  | Function: make-move
  |
  | Description: This function calls the minimax routine with the necessary
