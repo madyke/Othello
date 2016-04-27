@@ -1,33 +1,16 @@
 #|
-                  ***** MINIMAX.LSP *****
-
-Generalized recursive minimax routine.
-
-Author: Dr. John M. Weiss
-Class:	SDSM&T CSC447/547 Artificial Intelligence
-Date: 	Spring 2016
-
-Usage:    (minimax position depth)
-          where position is the position to be evaluated,
-          and depth is the search depth (number of plys).
-
-Returns:  (value path)
-          where value is the backed-up value from evaluation of leaf nodes,
-          and path is the path to the desired leaf node.
-
-Functions called:
-
-          (move-generator position) -
-              generates successors to the position.
-
-          (static position) -
-              applies the static evaluation function to the position.
-
-          Note: these functions may need additional arguments.
-|#
-
-#|
- | 	This is the move function used for the AI in the tournament
+ | Function: make-move
+ |
+ | Description: This function calls the minimax routine with the necessary
+ |   parameters. It is primarily a wrapper function for use in tournament play.
+ |
+ | Parameters:
+ |   board - Current board state
+ |   player - Current player's color
+ |   ply - How far to search for minimax
+ |
+ | Return:
+ |   ( row col ) - Best position available from minimax
  |#
 (defun make-move (board player ply)
     (when (eq player 'B)
@@ -36,15 +19,34 @@ Functions called:
     (when (eq player 'W)
         (setf player 'white)
     )
-    ;(format t "Minimax Return: ~s~%" (minimax ply player player board -1000000 1000000))
+    
+    ;Perform minimax and return the first move in best-path list
     (caadr (minimax ply player player board -1000000 1000000))
 )
 
+ 
+#|
+ | Function: minimax
+ |
+ | Description: Generalized recursive minimax routine. This function was heavily
+ |   adapted from code provided by Dr. Weiss.
+ |
+ | Parameters:
+ |   depth - How many levels to search in with minimax
+ |   currPlayer - Current player's color
+ |   maxPlayer - Which player is trying to maximize their result
+ |   board - Current board state
+ |   a - Alpha bound for a-b pruning
+ |   b - Beta bound for a-b pruning
+ |
+ | Return:
+ |   ( best-score best-path ) - Best score from minimax and path to that node
+ |#
 (defun minimax (depth currPlayer maxPlayer board a b)
 
     ; if we have searched deep enough, or there are no successors,
     ; return position evaluation and nil for the path
-      (if (or (eq depth 0) (null (move-generator currPlayer board)))
+      (if (or (eq depth 0) (null (get-moves currPlayer board)))
         (list (static board maxPlayer ) nil)
 
         ; otherwise, generate successors and run minimax recursively
@@ -53,7 +55,7 @@ Functions called:
                 (localBoard (copy-list board))
 
                 ; generate list of sucessor positions
-                (successors (move-generator currPlayer localBoard))
+                (successors (get-moves currPlayer localBoard))
 
                 ; initialize current best path to nil
                 (best-path nil)
@@ -92,37 +94,35 @@ Functions called:
                     )
                 )
 
+                ;Extract score from minimax return
                 (setq succ-score (car succ-value))
-
-                ;DEBUG
-                ;( format t "~%~s: ~s: ~d~%" depth successor succ-score )
 
                 ; update best value and path if a better move is found
                 ; (note that path is being stored in reverse order)
                 (cond 
+                    ;If the current player is trying to maximize the score
                     ((string-equal currPlayer maxPlayer) 
-                        (when 
-                            (> succ-score best-score)
+                        ;If current result is better than best so far, save it
+                        (when (> succ-score best-score)
                             (setq best-score succ-score)
                             (setq best-path (cons successor (cdr succ-value)))
                         )
+                        
+                        ;If best result is greater than current alpha, save it
                         (setf a (max a best-score))
                     )
+                    ;If the current player is trying to minimize the score
                     (t 
-                        (when 
-                            (< succ-score best-score)
+                        ;If current result is better than best so far, save it
+                        (when (< succ-score best-score)
                             (setq best-score succ-score)
                             (setq best-path (cons successor (cdr succ-value)))
                         )
+                        
+                        ;If best result is smaller than current beta, save it
                         (setf b (min b best-score))
                     )
                 )
-                  
-
-                #|(when (<= b a)
-                    ;(format t "PRUNE")
-                    (return)
-                )|#
             )
 
             ; return (value path) list when done
@@ -131,16 +131,36 @@ Functions called:
     )
 )
 
-
+ 
+#|
+ | Function: static
+ |
+ | Description: This is our static evaluation function. It was adopted from
+ |   https://kartikkukreja.wordpress.com/2013/03/30/heuristic-function-for-reversiothello/,
+ |   which was written by Kartik Kukreja. We used only a few of the heuristics
+ |   he mentions. We implemented a heuristic based on coin parity, corner
+ |   ownership, corner neighbor ownership, and mobility. Each heuristic is 
+ |   scaled by a certain factor which was determined by Kartik Kukreja. Because
+ |   the mobility heuristic greatly increased the AI's playing time, we do not
+ |   actually use it our code, though we have left our implementation in as a
+ |   guide for how it could work.
+ |
+ | Parameters:
+ |   board - Current board state
+ |   maxPlayer - Which player is trying to maximize their result
+ |
+ | Return:
+ |   value - Score for static evaluation function for current board
+ |#
 (defun static ( board maxPlayer )
     ( let 
         ;Local var - hold results from corners heuristic
-        ( ( results ( corners board maxPlayer ) ) )
+        ( ( results ( cornersHeuristic board maxPlayer ) ) )
 
         ;Add scaled values for all heuristics
         ( +
             ;Coin parity heuristic
-            ( * 10 ( coin board maxPlayer ) )
+            ( * 10 ( coinHeuristic board maxPlayer ) )
 
             ;Corners heuristic
             ( * 801.724 ( car results ) )
@@ -149,12 +169,26 @@ Functions called:
             ( * 382.026 ( cadr results ) )
 
             ;Mobility heuristic
-            ;( * 78.922 ( mobility board maxPlayer ) )
+            ;( * 78.922 ( mobilityHeuristic board maxPlayer ) )
         )
     )
 )
 
-(defun coin (board maxPlayer)
+ 
+#|
+ | Function: coinHeuristic
+ |
+ | Description: This the coin parity heuristic, which was adopted from the 
+ |   website mentioned in the static function documentation.
+ |
+ | Parameters:
+ |   board - Current board state
+ |   maxPlayer - Which player is trying to maximize their result
+ |
+ | Return:
+ |   value - Score for coin heuristic for current board
+ |#
+(defun coinHeuristic (board maxPlayer)
     ( let 
         ;Local vars
         (
@@ -169,7 +203,23 @@ Functions called:
     )
 )
 
-(defun corners (board maxPlayer)
+ 
+#|
+ | Function: cornersHeuristic
+ |
+ | Description: This the corners and courner neighbors ownership heuristic, 
+ |   which was adopted from the website mentioned in the static function 
+ |   documentation.
+ |
+ | Parameters:
+ |   board - Current board state
+ |   maxPlayer - Which player is trying to maximize their result
+ |
+ | Return:
+ |   (corners closeCorners) - Scores for corners heuristic and corner neighbors
+ |                            heuristic
+ |#
+(defun cornersHeuristic (board maxPlayer)
     ( let 
         ;Local vars
         (
@@ -214,6 +264,25 @@ Functions called:
     )    
 )
 
+ 
+#|
+ | Function: analyzeCorner
+ |
+ | Description: This is a helper function for cornersHeuristic. It examines the 
+ |   given corner position for how many pieces are owned by the min and max 
+ |   players for the corner and its neighbors.
+ |
+ | Parameters:
+ |   board - Current board state
+ |   maxPlayer - Which player is trying to maximize their result
+ |   minPlayer - Which player is trying to minimize their result
+ |   corner - What is the position of the corner being examined
+ |
+ | Return:
+ |   (maxCorners maxCloseCorners minCorners minCloseCorners)
+ |      - How many corners and corner neighbors are owned by the max player and
+ |        by the min player
+ |#
 (defun analyzeCorner (board maxPlayer minPlayer corner)
     (let 
         (
@@ -258,11 +327,26 @@ Functions called:
         )
 
         ;Return counters for corners and corner neighbors
-        (list maxCorners maxCloseCorners minCorners minCloseCorners)     
+        (list maxCorners maxCloseCorners minCorners minCloseCorners)
     )
 )
 
-(defun mobility (board maxPlayer)
+ 
+#|
+ | Function: mobilityHeuristic
+ |
+ | Description: This the mobility heuristic, which was adopted from the website
+ |   mentioned in the static function documentation. It attempts to compare how
+ |   many moves each player will after for the current board position.
+ |
+ | Parameters:
+ |   board - Current board state
+ |   maxPlayer - Which player is trying to maximize their result
+ |
+ | Return:
+ |   value - Score for coin heuristic for current board
+ |#
+(defun mobilityHeuristic (board maxPlayer)
     (let 
         ( 
             (minPlayer (if (string-equal maxPlayer 'black) 'white 'black))
@@ -283,8 +367,4 @@ Functions called:
             ( / ( * -100 minMoves ) ( + maxMoves minMoves ) )
         )
     )
-)
-
-(defun move-generator (player board)
-    (get-moves player board)         
 )
