@@ -256,6 +256,9 @@
                     )
                 )
             )
+            
+            ;Format output
+            ( format t "~%" )
         )
     )
 )
