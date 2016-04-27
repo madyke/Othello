@@ -1,9 +1,12 @@
 #|
  | Function: play-PvP-game
  |
- | Description:
- |   
- |
+ | Description: This fucntion allows a player to play against another player.
+ | The first player will be black and the second player will play white.
+ | This function checks to see if there are no valid moves left for both players
+ | in which case the game is over. If the player has valid moves then the move
+ | entered by the player will be verified as a valid move and if so the game
+ | board will be updated to represent their move.
  |#
 ( defun play-PvP-game ()
     (let ( (player 'black) (moves nil))
@@ -34,7 +37,7 @@
                 ( print-results *BOARD* )
             )
 
-            ;TODO Restructure this fucntion so get-moves isn't run on failure
+            ;Get all of the valid moves for the current player
             (setf moves (get-moves player *BOARD*))
         
             ;Check if current player has available moves
@@ -93,9 +96,14 @@
 #|
  | Function: play-PvE-game
  |
- | Description:
- |   
- |
+ | Description: This function allows the player to play against the AI. If the
+ | player did not enter which color they want to be then they are prompted if
+ | they want to go first. If the user goes first they are black otherwise they
+ | are white. The function will rotate between player moves and AI moves. If
+ | both the player and AI have invalid moves then the game is over. Otherwise
+ | if there are valid moves and it is the players turn the function will verify
+ | that the move is valid before updating the game board. If it is the AI's turn
+ | then make-move will be called to get the move the AI will make.
  |#
 ( defun play-PvE-game ( player )
     (let ( (moves nil) (human player) )
@@ -194,7 +202,7 @@
                         (t 
                             (format t "Player: ~s~%" player)
                             (print-board *BOARD*)
-                            (setf move (make-move *BOARD* player 3))
+                            (setf move (make-move *BOARD* player 4))
                             ( setf *BOARD* (flip-tiles move player *BOARD*)) 
                             ( if ( eq player 'black )
                                  ( setf player 'white )
@@ -204,10 +212,6 @@
                     )
                 )
             )
-            
-            ;DEBUG
-            ;( format t "~%~s~%" move )
-            ;(read)
         )
     )
 )
@@ -216,9 +220,9 @@
 #|
  | Function: play-EvE-game
  |
- | Description:
- |   
- |
+ | Description: This function will allow the AI to play against itself. The game will
+ | flip between black and white players and call the make-move function on each
+ | player's turn to allow the AI to make it's move.
  |#
 ( defun play-EvE-game ()
     (let ( (moves nil) )
@@ -244,10 +248,7 @@
                 ( format t "~%~s has no available moves.~%~%GAME OVER~%~%" player )
                 ( print-results *BOARD* )
             )
-            
-            ;DEBUG
-            ( format t "~%~%Moves:~s~%~%" moves )
-       
+                   
             ;Check if current player has available moves
             ( cond
                 ;If current player has no moves
