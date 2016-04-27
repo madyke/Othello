@@ -132,49 +132,52 @@ Functions called:
 )
 
 
-(defun static ( board player )
+(defun static ( board maxPlayer )
     ( let 
         ;Local var - hold results from corners heuristic
-        ( ( results ( corners board player ) ) )
+        ( ( results ( corners board maxPlayer ) ) )
 
         ;Add scaled values for all heuristics
         ( +
             ;Coin parity heuristic
-            ( * 10 ( coin board player ) )
+            ( * 10 ( coin board maxPlayer ) )
 
             ;Corners heuristic
             ( * 801.724 ( car results ) )
 
             ;Corner neighbors heuristic
             ( * 382.026 ( cadr results ) )
+
+            ;Mobility heuristic
+            ;( * 78.922 ( mobility board maxPlayer ) )
         )
     )
 )
 
-(defun coin (board player)
+(defun coin (board maxPlayer)
     ( let 
         ;Local vars
         (
-            ( maxPlayer ( if ( string-equal player 'black ) 'B 'W ) )
-            ( minPlayer ( if ( string-equal player 'black ) 'W 'B ) )
+            ( maxPlayer ( if ( string-equal maxPlayer 'black ) 'B 'W ) )
+            ( minPlayer ( if ( string-equal maxPlayer 'black ) 'W 'B ) )
         )
         
         ;Coin parity heuristic
-        ( / ( - ( count-pieces maxPlayer board ) ( count-pieces minPlayer board ) )
-            ( + ( count-pieces maxPlayer board ) ( count-pieces minPlayer board ) )
-        )
+        ( * 100 ( / ( - ( count-pieces maxPlayer board ) ( count-pieces minPlayer board ) )
+                    ( + ( count-pieces maxPlayer board ) ( count-pieces minPlayer board ) )
+        ))
     )
 )
 
-(defun corners (board player)
+(defun corners (board maxPlayer)
     ( let 
         ;Local vars
         (
             ;Max player color
-            ( maxPlayer ( if ( string-equal player 'black ) 'B 'W ) )
+            ( maxPlayer ( if ( string-equal maxPlayer 'black ) 'B 'W ) )
 
             ;Min player color
-            ( minPlayer ( if ( string-equal player 'black ) 'W 'B ) )
+            ( minPlayer ( if ( string-equal maxPlayer 'black ) 'W 'B ) )
 
             ;Counters
             (maxCorners 0)
@@ -259,8 +262,27 @@ Functions called:
     )
 )
 
-(defun mobility (board player)
-    
+(defun mobility (board maxPlayer)
+    (let 
+        ( 
+            (minPlayer (if (string-equal maxPlayer 'black) 'white 'black))
+            maxMoves
+            minMoves 
+        )
+
+        ;Get number of moves for each player
+        (setf maxMoves ( length (get-moves maxPlayer board)))
+        (setf minMoves ( length (get-moves minPlayer board)))
+
+        ;Calculate heuristic value
+        ( if ( > maxMoves minMoves )
+            ;If max has more moves
+            ( / ( * 100 maxMoves ) ( + maxMoves minMoves ) )
+
+            ;If min has more moves
+            ( / ( * -100 minMoves ) ( + maxMoves minMoves ) )
+        )
+    )
 )
 
 (defun move-generator (player board)
