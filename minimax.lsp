@@ -134,6 +134,25 @@ Functions called:
 
 (defun static ( board player )
     ( let 
+        ;Local var - hold results from corners heuristic
+        ( ( results ( corners board player ) ) )
+
+        ;Add scaled values for all heuristics
+        ( +
+            ;Coin parity heuristic
+            ( * 10 ( coin board player ) )
+
+            ;Corners heuristic
+            ( * 801.724 ( car results ) )
+
+            ;Corner neighbors heuristic
+            ( * 382.026 ( cadr results ) )
+        )
+    )
+)
+
+(defun coin (board player)
+    ( let 
         ;Local vars
         (
             ( maxPlayer ( if ( string-equal player 'black ) 'B 'W ) )
@@ -145,6 +164,103 @@ Functions called:
             ( + ( count-pieces maxPlayer board ) ( count-pieces minPlayer board ) )
         )
     )
+)
+
+(defun corners (board player)
+    ( let 
+        ;Local vars
+        (
+            ;Max player color
+            ( maxPlayer ( if ( string-equal player 'black ) 'B 'W ) )
+
+            ;Min player color
+            ( minPlayer ( if ( string-equal player 'black ) 'W 'B ) )
+
+            ;Counters
+            (maxCorners 0)
+            (maxCloseCorners 0)
+            (minCorners 0)
+            (minCloseCorners 0)
+
+            ;Positions of corners on board
+            (corners '(0 7 56 63) )
+
+            ;Placeholder for analyze results
+            results
+        )
+        
+        ;Loop over each corner
+        (dolist (i corners)
+            ;Analyze corner
+            (setf results (analyzeCorner board maxPlayer minPlayer i) )
+
+            ;Save results of analyze
+            (setf maxCorners (+ (car results) maxCorners) )
+            (setf maxCloseCorners (+ (cadr results) maxCloseCorners) ) 
+            (setf minCorners (+ (caddr results) minCorners ) )
+            (setf minCloseCorners (+ (cadddr results) minCloseCorners) )
+        )
+
+        ;Return scaled values for corners and close corners
+        ( list
+            ;Value for corners
+            ( * 25 (- maxCorners minCorners ) )
+            ;Value for close corners
+            ( * -12.5 ( - maxCloseCorners minCloseCorners ) )
+        )
+    )    
+)
+
+(defun analyzeCorner (board maxPlayer minPlayer corner)
+    (let 
+        (
+            ;List of positions neighboring corners
+            (closeCorners 
+                (cond
+                    ((= corner 0) '(1 8 9))
+                    ((= corner 7) '(6 14 15))
+                    ((= corner 56) '(48 49 57))
+                    ((= corner 63) '(54 55 62))
+                )
+            )
+
+            ;Counters
+            (maxCorners 0)
+            (maxCloseCorners 0)
+            (minCorners 0)
+            (minCloseCorners 0)
+        )
+
+        ;Loop over all possibilities
+        (cond
+            ;If max player owns corner
+            ((string-equal maxPlayer (nth corner board))
+                (setf maxCorners (1+ maxCorners)))
+
+            ;If min player owns corner
+            ((string-equal minPlayer (nth corner board))
+                (setf minCorners (1+ minCorners)))
+
+            ;If noone owns corner, check corner neighbors
+            (t
+                ;Loop over corner neighbors
+                (dolist ( i closeCorners )
+                    ;Count who owns corner neighbors
+                    (if (string-equal maxPlayer (nth i board))
+                        (setf maxCloseCorners (1+ maxCloseCorners))
+                        (setf minCloseCorners (1+ minCloseCorners))            
+                    )
+                )
+            )
+        )
+
+        ;Return counters for corners and corner neighbors
+        (list maxCorners maxCloseCorners minCorners minCloseCorners)     
+    )
+)
+
+(defun mobility (board player)
+    
 )
 
 (defun move-generator (player board)
