@@ -35,6 +35,23 @@
                 ;Game over, print info
                 ( format t "~%~s has no available moves.~%~%GAME OVER~%~%" player )
                 ( print-results *BOARD* )
+                
+                ;Ask for rematch
+                ( format t "~%Would you like to play another match (y/n)?" )
+                
+                ;If user responds 'y', start new game
+                ( when ( equal ( read ) 'y )
+                    ( setf *BOARD* '( - - - - - - - -
+                                      - - - - - - - -
+                                      - - - - - - - -
+                                      - - - W B - - -
+                                      - - - B W - - -
+                                      - - - - - - - -
+                                      - - - - - - - -
+                                      - - - - - - - - )
+                    )
+                    ( play-PvP-game )
+                )
             )
 
             ;Get all of the valid moves for the current player
@@ -145,6 +162,23 @@
                 ;Game over, print info
                 ( format t "~%~s has no available moves.~%~%GAME OVER~%~%" player )
                 ( print-results *BOARD* )
+                
+                ;Ask for rematch
+                ( format t "~%Would you like to play another match (y/n)?" )
+                
+                ;If user responds 'y', start new game
+                ( when ( equal ( read ) 'y )
+                    ( setf *BOARD* '( - - - - - - - -
+                                      - - - - - - - -
+                                      - - - - - - - -
+                                      - - - W B - - -
+                                      - - - B W - - -
+                                      - - - - - - - -
+                                      - - - - - - - -
+                                      - - - - - - - - )
+                    )
+                    ( play-PvE-game human )
+                )
             )
             
             ;DEBUG
@@ -247,6 +281,23 @@
                 ;Game over, print info
                 ( format t "~%~s has no available moves.~%~%GAME OVER~%~%" player )
                 ( print-results *BOARD* )
+                
+                ;Ask for rematch
+                ( format t "~%Would you like to watch another match (y/n)?" )
+                
+                ;If user responds 'y', start new game
+                ( when ( equal ( read ) 'y )
+                    ( setf *BOARD* '( - - - - - - - -
+                                      - - - - - - - -
+                                      - - - - - - - -
+                                      - - - W B - - -
+                                      - - - B W - - -
+                                      - - - - - - - -
+                                      - - - - - - - -
+                                      - - - - - - - - )
+                    )
+                    ( play-EvE-game )
+                )
             )
                    
             ;Check if current player has available moves
@@ -268,9 +319,9 @@
                 
                 ;Else player has at least one move
                 ( t
-                    (format t "Player: ~s~%" player)
+                    (format t "~%Player: ~s~%~%" player)
                     (print-board *BOARD*)
-                    (setf move (make-move *BOARD* player 4))
+                    (setf move (make-move *BOARD* player 1))
                     ( setf *BOARD* (flip-tiles move player *BOARD*)) 
                     ( if ( eq player 'black )
                          ( setf player 'white )
