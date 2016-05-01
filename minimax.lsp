@@ -138,6 +138,9 @@
                         ( setf b ( min b best-score ) )
                     )
                 )
+                
+                ;Prune for alpha-beta cutoffs
+                (when ( <= b a ) ( return ) )
             )
 
             ; return (value path) list when done
